@@ -1,68 +1,64 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { timesheetSchema } from "@/schemas/timesheet-schema";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import projectService from "@/services/project";
-import { ReactElement, useState } from "react";
-import { IProject } from "@/interfaces/project";
+import { useRouter } from "next/router";
+import { Button } from "@/components/shadcn/button";
+import { Calendar, Repeat, ArrowUpDown, Plus } from "lucide-react";
+import TimesheetCard from "@/components/Home/timesheet-card";
 import timesheetService from "@/services/timesheet";
-import { ITimesheet } from "@/interfaces/timesheet";
-import MainLayout from "@/layouts/MainLayout";
+import { useQuery } from "@tanstack/react-query";
+import { useTheme } from "@/providers/ThemeProvider";
 
-export default function Home() {
-  const [selectedProject, setSelectedProject] = useState<IProject | null>(null);
+export default function HomePage() {
+  const router = useRouter();
 
-  const { data: projects } = useQuery({
-    queryKey: ["projects"],
-    queryFn: projectService.getAllProjects,
-    staleTime: 5 * 60 * 1000,
+  const { toggleTheme} = useTheme();
+
+  const { data: timesheets, isLoading } = useQuery({
+    queryKey: ["find-all-timesheets"],
+    queryFn: timesheetService.getAllTimesheets
   });
-
-  type TimesheetFormValues = z.input<typeof timesheetSchema>;
-  type TimesheetSubmit = z.output<typeof timesheetSchema>;
-
-  const form = useForm<TimesheetFormValues>({
-    resolver: zodResolver(timesheetSchema),
-    defaultValues: {
-      date: new Date().toISOString().slice(0, 10),
-      project: -1,
-      billableHours: 0,
-      nonBillableHours: 0,
-      taskDescription: "",
-    },
-  });
-
-  const mutation = useMutation({
-    mutationFn: (data: ITimesheet) => timesheetService.createTimesheet(data),
-    onSuccess: () => {
-      alert("Timesheet submitted successfully!");
-      form.reset();
-    },
-    onError: (err) => {
-      console.error(err);
-      alert("Failed to submit timesheet");
-    },
-  });
-
-  const onSubmit = (values: TimesheetSubmit) => {
-    const request: ITimesheet = {
-      date: values.date,
-      project: selectedProject ?? { id: -1, name: "Nothing" },
-      billableHours: values.billableHours,
-      nonBillableHours: values.nonBillableHours,
-      taskDescription: values.taskDescription,
-    };
-    mutation.mutate(request);
-  };
 
   return (
-    <div className="h-full w-full flex justify-center items-center">
-      Hello
+    <div className="min-h-screen flex items-center justify-center bg-primary p-4">
+      <div className="w-full max-w-md bg-background rounded-lg shadow-lg p-4 space-y-4">
+        {/* Top navbar */}
+        <div className="flex items-center justify-between bg-secondary text-primary px-4 py-2 rounded-md">
+          <div className="flex gap-3">
+            <Button variant="ghost" className="text-primary p-0">
+              <Calendar />
+            </Button>
+            <Button variant="ghost" className="text-primary p-0">
+              <Repeat />
+            </Button>
+            <Button variant="ghost" className="text-primary p-0" onClick={toggleTheme}>
+              <ArrowUpDown />
+            </Button>
+          </div>
+          <Button
+            variant="ghost"
+            className="text-primary p-0"
+            onClick={() => router.push("/timesheet")}
+          >
+            <Plus />
+          </Button>
+        </div>
+
+        {/* Index cards */}
+        {!isLoading && (
+          <div className="space-y-3">
+            {timesheets?.map((timesheet) => (
+              <TimesheetCard
+                key={timesheet.id}
+                date={timesheet.date.toString()}
+                project={timesheet.project.name}
+                billableHours={timesheet.billableHours}
+                nonBillableHours={timesheet.nonBillableHours}
+                onClick={() => {
+                  // placeholder for detail page
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
-Home.getLayout = function getLayout(page: ReactElement) {
-  return <MainLayout>{page}</MainLayout>;
-};

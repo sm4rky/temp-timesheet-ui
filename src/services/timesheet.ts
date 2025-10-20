@@ -8,6 +8,11 @@ const timesheetService = {
     const response = (await http.post<ITimesheet>(`${PREFIX_PATH}`, data)).data;
     return response;
   },
+
+  getAllTimesheets: async (): Promise<ITimesheet[]> => {
+    const response = await http.get<ITimesheet[]>(`${PREFIX_PATH}`);
+    return response.data;
+  },
 };
 
 export default timesheetService;
