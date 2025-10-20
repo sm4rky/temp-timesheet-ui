@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { Button } from "@/components/shadcn/button";
-import { Calendar, Repeat, ArrowUpDown, Plus } from "lucide-react";
+import { Calendar, Repeat, ArrowUpDown, Plus, TreePalm } from "lucide-react";
 import TimesheetCard from "@/components/Home/timesheet-card";
 import timesheetService from "@/services/timesheet";
 import { useQuery } from "@tanstack/react-query";
@@ -22,7 +22,10 @@ export default function HomePage() {
         {/* Top navbar */}
         <div className="flex items-center justify-between bg-secondary text-primary px-4 py-2 rounded-md">
           <div className="flex gap-3">
-            <Button variant="ghost" className="text-primary p-0">
+            <Button variant="ghost" className="text-primary p-0" onClick={() => router.push("/Timeoff")}>
+              <TreePalm />
+            </Button>
+            <Button variant="ghost" className="text-primary p-0" onClick={() => router.push("/Holiday")}>
               <Calendar />
             </Button>
             <Button variant="ghost" className="text-primary p-0">
