@@ -19,7 +19,7 @@ export default function TimesheetCard({
   return (
     <Card
       onClick={onClick}
-      className="!bg-secondary rounded-lg shadow-lg p-4 flex justify-between items-center cursor-pointer hover:bg-secondary/60 hover:text-primary"
+      className="!bg-background rounded-lg shadow-lg p-4 flex justify-between items-center cursor-pointer hover:bg-secondary/60 hover:text-primary"
     >
       <CardContent className="p-0 flex justify-between items-center w-full">
         <div className="space-y-1">
