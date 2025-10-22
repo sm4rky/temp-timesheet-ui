@@ -4,7 +4,6 @@ export interface ILeaveBalance {
   carriedOverDays: number;
   currentYearDays: number;
   usedPtoDays: number;
-  lastUpdated: string;   // ISO date
-  // computed from backend via @Transient getter
-  leaveBalance: number;
+  lastUpdated: string; // ISO date (LocalDate)
+  leaveBalance: number; // computed by backend
 }

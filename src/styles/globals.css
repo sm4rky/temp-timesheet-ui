@@ -4,18 +4,18 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0% 0 0); /* gray-800 in oklch */
+  --background: oklch(26.448% 0.00003 271.152); /* gray-800 in oklch */
   --foreground: oklch(0.863 0.005 261.7); /* gray-200 in oklch */
   --radius: 0.625rem;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(100% 0.00011 271.152);               /* black */
-  --primary-foreground: oklch(0.985 0 0); /* white text on black */
-  --secondary: oklch(0.828 0.189 84.429); /* yellow-500 in oklch */
-  --secondary-foreground: oklch(0.828 0.189 84.429);  /* yellow-400 in oklch */
-  --muted: oklch(0.47 0.01 269.0);       /* gray-600 in oklch */
+  --primary: oklch(100% 0.00011 271.152);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.8594 0.158 85.79);
+  --secondary-foreground: oklch(0.828 0.189 84.429);
+  --muted: oklch(0.47 0.01 269.0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
@@ -119,10 +119,57 @@ body {
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground; }
+}
+
+/* === 9:16 Portrait Frame ================================================== */
+:root {
+  --frame-ratio-w: 9;
+  --frame-ratio-h: 16;
+}
+
+html, body, #__next { height: 100%; }
+body { margin: 0; overflow: hidden; }
+
+/* Center the frame perfectly */
+.viewport {
+  height: 100dvh;            /* changed from min-height */
+  width: 100vw;
+  display: grid;
+  place-items: center;       /* vertical + horizontal centering */
+  background: var(--background);
+}
+
+/* Fixed 9:16 frame */
+.frame {
+  aspect-ratio: var(--frame-ratio-w) / var(--frame-ratio-h);
+  width: min(100vw, calc(100dvh * (var(--frame-ratio-w) / var(--frame-ratio-h))));
+  height: min(100dvh, calc(100vw * (var(--frame-ratio-h) / var(--frame-ratio-w))));
+  /* ↓↓↓ use app background & foreground so the whole frame is dark like your reference */
+  background: var(--background);
+  color: var(--foreground);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  overflow: hidden;
+  position: relative;
+  scrollbar-gutter: stable both-edges;
+}
+
+/* Inner scroll area for page content */
+.frame-body {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+/* Map viewport utilities to frame-size so pages can't escape */
+.frame .h-screen      { height: 100% !important; }
+.frame .min-h-screen  { min-height: 100% !important; }
+.frame .w-screen      { width: 100% !important; }
+.frame .min-w-screen  { min-width: 100% !important; }
+
+/* (Optional) landscape padding for nicer letterboxing */
+@media (orientation: landscape) {
+  .viewport { padding-block: 8px; }
 }

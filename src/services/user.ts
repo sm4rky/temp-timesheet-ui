@@ -1,8 +1,11 @@
 export function getUserEmail(): string {
-  // TEMP: source from env or hardcode during dev
-  // 1) preferred: set NEXT_PUBLIC_USER_EMAIL in .env.local
-  if (process.env.NEXT_PUBLIC_USER_EMAIL) return process.env.NEXT_PUBLIC_USER_EMAIL;
+  const envEmail = process.env.NEXT_PUBLIC_USER_EMAIL?.trim();
+  if (envEmail) return envEmail;
 
-  // 2) fallback dev user
+  if (typeof window !== "undefined") {
+    const ls = window.localStorage.getItem("userEmail")?.trim();
+    if (ls) return ls;
+  }
+
   return "rohit.gandham@infodatinc.com";
 }

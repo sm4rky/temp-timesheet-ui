@@ -1,6 +1,4 @@
-interface IProject {
+export interface IProject {
   id: number;
   name: string;
 }
-
-export type { IProject };

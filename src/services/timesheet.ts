@@ -1,17 +1,30 @@
-import { ITimesheet } from "@/interfaces/timesheet";
+import { ITimesheet, ITimesheetRequest } from "@/interfaces/timesheet";
 import http from "@/services/api";
+import { getUserEmail } from "@/services/user";
 
 const PREFIX_PATH = "/api/timesheets";
 
+function withUserHeader() {
+  const email = getUserEmail();
+  return email ? { headers: { "X-User-Email": email } } : {};
+}
+
 const timesheetService = {
-  createTimesheet: async (data: ITimesheet): Promise<ITimesheet> => {
-    const response = (await http.post<ITimesheet>(`${PREFIX_PATH}`, data)).data;
-    return response;
+  createTimesheet: async (data: ITimesheetRequest): Promise<ITimesheet> => {
+    const res = await http.post<ITimesheet>(`${PREFIX_PATH}`, data, withUserHeader());
+    return res.data;
   },
 
+  /** All users (admin-style listing) */
   getAllTimesheets: async (): Promise<ITimesheet[]> => {
-    const response = await http.get<ITimesheet[]>(`${PREFIX_PATH}`);
-    return response.data;
+    const res = await http.get<ITimesheet[]>(`${PREFIX_PATH}`);
+    return res.data;
+  },
+
+  /** Current user only (preferred for Home list) */
+  getTimesheetsByUser: async (): Promise<ITimesheet[]> => {
+    const res = await http.get<ITimesheet[]>(`${PREFIX_PATH}/user`, withUserHeader());
+    return res.data;
   },
 };
 

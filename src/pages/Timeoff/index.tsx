@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/shadcn/button";
 import { ArrowLeft } from "lucide-react";
 import leaveBalanceService from "@/services/leaveBalance";
+import { ILeaveBalance } from "@/interfaces/leaveBalance";
 
 /** Helpers */
 function getDisplayName(): string {
@@ -28,7 +29,7 @@ export default function TimeOffPage() {
   const router = useRouter();
   const displayName = getDisplayName();
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery<ILeaveBalance>({
     queryKey: ["leave-balance"],
     queryFn: leaveBalanceService.getLeaveBalance,
     staleTime: 5 * 60 * 1000,
@@ -46,7 +47,7 @@ export default function TimeOffPage() {
     subText?: string;
     emphasize?: boolean;
   }) => (
-    <div className="w-[300px] rounded-md border border-primary shadow-inner bg-secondary mx-auto">
+    <div className="w-full max-w-[340px] rounded-md border border-primary shadow-inner bg-secondary">
       <div className="px-6 py-5 text-center">
         <div className="text-primary font-extrabold text-[24px] leading-tight">
           {title}
@@ -74,66 +75,60 @@ export default function TimeOffPage() {
   const used = !isLoading && !isError ? String(data?.usedPtoDays ?? 0) : "-";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-primary p-4">
-      {/* Outer card shell to match your other pages */}
-      <div className="w-full max-w-md bg-background rounded-lg shadow-lg overflow-hidden">
-        {/* Header bar — yellow, round back button, centered title, right logo */}
-        <div className="flex items-center justify-between bg-secondary px-3 py-2">
-          <Button
-            variant="ghost"
-            className="p-0 rounded-full w-9 h-9 border border-primary bg-secondary text-primary hover:bg-secondary"
-            onClick={() => router.push("/Home")}
-            aria-label="Back"
-            title="Back"
-          >
-            <ArrowLeft className="text-primary" size={18} />
-          </Button>
+    // Fill the 9:16 frame; fixed header; scrollable body
+    <div className="h-full w-full flex flex-col bg-background text-foreground overflow-hidden">
+      {/* Header */}
+      <div className="shrink-0 flex items-center justify-between bg-secondary px-3 py-2">
+        <Button
+          variant="ghost"
+          className="p-0 rounded-full w-9 h-9 border border-primary bg-secondary text-primary hover:bg-secondary"
+          onClick={() => router.push("/Home")}
+          aria-label="Back"
+          title="Back"
+        >
+          <ArrowLeft className="text-primary" size={18} />
+        </Button>
 
-          <div className="text-center text-primary font-extrabold text-lg select-none">
-            Time Off
-          </div>
-
-          <div className="w-16 h-7 relative mr-[2px]">
-            <Image
-              src="/infodat-logo.png"
-              alt="Infodat"
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
+        <div className="text-center text-primary font-extrabold text-lg select-none">
+          Time Off
         </div>
 
-        {/* Body — dark background, light text (from tokens) */}
-        <div className="w-full flex flex-col items-center bg-background text-foreground">
-          {/* Name heading with line-break like screenshot */}
-          <div className="mt-6 text-center font-extrabold text-[24px] leading-snug">
-            {displayName}&apos;s Leave
-            <br />
-            Balance
-          </div>
-
-          {/* Stacked yellow tiles */}
-          <div className="mt-6 flex flex-col items-center gap-6">
-            <Tile title="Carried Over" value={carried} />
-            <Tile title="Current Year" value={current} />
-            <Tile title="Leave Balance" value={balance} subText="Available" emphasize />
-          </div>
-
-          {/* Footer lines in yellow (use secondary for the exact yellow) */}
-          <div className="mt-8 text-center font-extrabold text-[20px] text-secondary">
-            As of Today: {todayMMDDYYYY()}
-            <br />
-            <span className="mt-2 inline-block">Used P.T.O: {used} days</span>
-          </div>
-
-          {isError && (
-            <div className="mt-3 text-destructive text-sm pb-4">
-              {(error as Error)?.message ?? "Failed to load leave balance"}
-            </div>
-          )}
-          {!isError && <div className="pb-4" />}
+        <div className="w-16 h-7 relative mr-[2px]">
+          <Image
+            src="/infodat-logo.png"
+            alt="Infodat"
+            fill
+            className="object-contain"
+            priority
+          />
         </div>
+      </div>
+
+      {/* Body */}
+      <div className="flex-1 overflow-auto px-6 py-5 flex flex-col items-center">
+        <div className="mt-2 text-center font-extrabold text-[24px] leading-snug">
+          {displayName}&apos;s Leave
+          <br />
+          Balance
+        </div>
+
+        <div className="mt-6 flex flex-col items-center gap-6">
+          <Tile title="Carried Over" value={carried} />
+          <Tile title="Current Year" value={current} />
+          <Tile title="Leave Balance" value={balance} subText="Available" emphasize />
+        </div>
+
+        <div className="mt-8 text-center font-extrabold text-[20px] text-secondary">
+          As of Today: {todayMMDDYYYY()}
+          <br />
+          <span className="mt-2 inline-block">Used P.T.O: {used} days</span>
+        </div>
+
+        {isError && (
+          <div className="mt-3 text-destructive text-sm">
+            {(error as Error)?.message ?? "Failed to load leave balance"}
+          </div>
+        )}
       </div>
     </div>
   );
