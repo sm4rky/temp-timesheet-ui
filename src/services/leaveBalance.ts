@@ -10,13 +10,11 @@ function withUserHeader() {
 }
 
 const leaveBalanceService = {
-  /** GET /api/leave-balance (requires X-User-Email) */
   getLeaveBalance: async (): Promise<ILeaveBalance> => {
     const res = await http.get<ILeaveBalance>(`${PREFIX}`, withUserHeader());
     return res.data;
   },
 
-  /** PATCH /api/leave-balance/use?usedDays=n (increments usedPtoDays) */
   useLeave: async (usedDays: number): Promise<ILeaveBalance> => {
     const res = await http.patch<ILeaveBalance>(
       `${PREFIX}/use`,
@@ -29,7 +27,6 @@ const leaveBalanceService = {
     return res.data;
   },
 
-  /** PATCH /api/leave-balance/reset?carryOver=n (resets for new year) */
   resetYearlyBalance: async (carryOver: number): Promise<ILeaveBalance> => {
     const res = await http.patch<ILeaveBalance>(
       `${PREFIX}/reset`,

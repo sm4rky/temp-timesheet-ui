@@ -1,8 +1,8 @@
-export interface IHolidayResponse {
+export interface IHoliday {
   id: number;
   holidayName: string;
   holidayDate: string; // "YYYY-MM-DD"
-  description?: string | null;
+  description: string;
 }
 
 export interface IHolidayRequest {

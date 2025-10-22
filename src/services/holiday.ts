@@ -1,9 +1,9 @@
-import { IHolidayResponse } from "@/interfaces/holiday";
+import { IHoliday } from "@/interfaces/holiday";
 import http from "@/services/api";
 
 const PREFIX_PATH = "/api/holidays";
 
-function mapHoliday(raw: any): IHolidayResponse {
+function mapHoliday(raw: any): IHoliday {
   return {
     id: Number(raw.id),
     holidayName: String(raw.holidayName ?? raw.holiday_name ?? ""),
@@ -13,13 +13,13 @@ function mapHoliday(raw: any): IHolidayResponse {
 }
 
 const holidayService = {
-  getAllHolidays: async (): Promise<IHolidayResponse[]> => {
+  getAllHolidays: async (): Promise<IHoliday[]> => {
     const res = await http.get<any[]>(`${PREFIX_PATH}`);
     const data = res.data ?? [];
     return Array.isArray(data) ? data.map(mapHoliday) : [];
   },
 
-  createHoliday: async (payload: IHolidayResponse): Promise<IHolidayResponse> => {
+  createHoliday: async (payload: IHoliday): Promise<IHoliday> => {
     const res = await http.post(`${PREFIX_PATH}`, payload);
     return mapHoliday(res.data);
   },

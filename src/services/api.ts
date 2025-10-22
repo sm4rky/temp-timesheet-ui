@@ -1,4 +1,3 @@
-// src/services/api.ts
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
 import { getUserEmail } from "@/services/user";
 
